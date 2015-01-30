@@ -1,0 +1,100 @@
+<!--
+IAT 381: LAB 3
+Sophia Bhatti | 301206157
+
+ Note: Sorry for being super late. I tried to understand React's language but I could not wrap my brain of inserting "html-ish" tags mixing with Javascript code. I  ended up using a tutorial.
+
+Reference: http://webcloud.se/sortable-list-component-react-js/
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charaset='utf-8'>
+  	<title>IAT 381 React App</title>
+ 	
+ 	<link rel="stylesheet" type="text/css" href="main.css">
+    <script src="build/react.js"></script>
+    <script src="build/JSXTransformer.js"></script>
+      <script src="app.js"></script>
+  </head>
+
+  <body>
+
+
+  	<!-- container node -->
+  	<div id="app"></div>
+
+  	<script type="text/jsx">
+			/** @jsx React.DOM */
+
+			var shows = ['House of Cards', 'Game of Thrones', 'Orange is the New Black', 'Doctor Who', 'The Walking Dead'];
+
+			var placeholder = document.createElement("li");
+			placeholder.className = "placeholder";
+
+			var MessageBox = React.createClass({
+
+				  getInitialState: function() {
+				    return {data: this.props.data};
+				  },
+
+				  dragStart: function(e) {
+			    this.dragged = e.currentTarget;
+			    e.dataTransfer.effectAllowed = 'move';
+			  },
+
+			  dragEnd: function(e) {
+			    this.dragged.style.display = "block";
+			    this.dragged.parentNode.removeChild(placeholder);
+
+			    // Update state
+			    var data = this.state.data;
+			    var from = Number(this.dragged.dataset.id);
+			    var to = Number(this.over.dataset.id);
+			    if(from < to) to--;
+			    data.splice(to, 0, data.splice(from, 1)[0]);
+			    this.setState({data: data});
+			  },
+
+			  dragOver: function(e) {
+			    e.preventDefault();
+			    this.dragged.style.display = "none";
+			    if(e.target.className == "placeholder") return;
+			    this.over = e.target;
+			    e.target.parentNode.insertBefore(placeholder, e.target);
+ 				 },
+
+					render: function() {
+
+		  		var listItems = this.state.data.map(function(item, i) {
+		      return (
+		        <li data-id={i}
+		            key={i}
+		            draggable="true"
+		            onDragEnd={this.dragEnd}
+		            onDragStart={this.dragStart}>
+		          {item}
+		        </li>
+		      );
+		    }, this);
+		    return (
+		    	<div>
+			    	<h1>TV Show Sorter</h1>
+			    	<ul onDragOver={this.dragOver}>{listItems}</ul>
+		    	</div>
+		    	)
+		  	}
+			});
+
+			React.render(
+				<MessageBox data={shows} />,
+				document.getElementById('app') //html node. 
+			);
+  	</script>
+  </body>	
+
+
+
+
+</html>
